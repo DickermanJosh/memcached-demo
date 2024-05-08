@@ -24,6 +24,7 @@ app.get('/', (req, res) => {
 app.post('/startTest', async (req, res) => {
     const sqlResults = await dao.showAllContentWithoutMemcached();
     const memResults = await dao.showAllContentWithMemcached();
+    console.log(`SQL: ${sqlResults}\nMemcached: ${memResults}`);
 
     res.render('results', {
         sqlTime: sqlResults.timeTaken,
