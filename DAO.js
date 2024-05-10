@@ -9,7 +9,6 @@ class DAO {
 
     async showAllContentWithoutMemcached() {
         const startTime = Date.now();
-        const sql = `SELECT * FROM contents ORDER BY content_id DESC`;
 
         const results = await Promise.all([
             this.multipleJoinsOrderExample(),
@@ -79,7 +78,7 @@ class DAO {
         JOIN contents c2 ON c.id = c2.id
         WHERE c2.content LIKE ?
             ORDER BY LENGTH(c.content) DESC;`;
-        const params = ['%data%']; // Customize as needed
+        const params = ['%data%'];
         const rows = await executeSQL(sql, params);
         return rows;
     }
@@ -91,7 +90,7 @@ class DAO {
         JOIN contents c2 ON c1.id = c2.id AND c2.content_id = c1.content_id + 1
         JOIN contents c3 ON c2.id = c3.id AND c3.content_id = c2.content_id + 1
         WHERE c1.id = ?;`;
-        const params = [1]; // Assuming you want to test for id = 1
+        const params = [1];
         const rows = await executeSQL(sql, params);
         return rows;
     }
@@ -110,7 +109,7 @@ class DAO {
         SELECT *
             FROM contents
         WHERE REVERSE(content) LIKE ?;`;
-        const params = ['%0atad%']; // Customize as needed
+        const params = ['%0atad%'];
         const rows = await executeSQL(sql, params);
         return rows;
     }
