@@ -10,18 +10,26 @@ class DAO {
     async showAllContentWithoutMemcached() {
         const startTime = Date.now();
         const sql = `SELECT * FROM contents ORDER BY content_id DESC`;
-        const rows = await executeSQL(sql);
+
+        const results = await Promise.all([
+            this.multipleJoinsOrderExample(),
+            this.recursiveJoinExample(),
+            this.nestedSubqueryExample(),
+            this.functionConditionExample()
+        ]);
+
         const finishTime = Date.now();
+        const data = results.flat();
 
         // Cache the data after fetching from the database
         return new Promise((resolve, reject) => {
-            memcached.set(this.cacheKey, rows, 10 * 60, (err) => {
+            memcached.set(this.cacheKey, data, 10 * 60, (err) => {
                 if (err) {
                     reject(err);
                 } else {
                     resolve({
                         timeTaken: finishTime - startTime,
-                        data: rows
+                        data: data
                     });
                 }
             });
@@ -38,7 +46,7 @@ class DAO {
                 }
                 const endTime = Date.now();
                 const timeTaken = endTime - startTime;
-                
+
                 // Clear the cache after retrieving the data
                 this.clearCache().then(() => {
                     resolve({
@@ -61,6 +69,52 @@ class DAO {
             });
         });
     }
+
+    // SQL Queries
+    async multipleJoinsOrderExample() {
+        const sql = `
+        SELECT u.name, c.content
+        FROM users u
+        JOIN contents c ON u.id = c.id
+        JOIN contents c2 ON c.id = c2.id
+        WHERE c2.content LIKE ?
+            ORDER BY LENGTH(c.content) DESC;`;
+        const params = ['%data%']; // Customize as needed
+        const rows = await executeSQL(sql, params);
+        return rows;
+    }
+
+    async recursiveJoinExample() {
+        const sql = `
+        SELECT c1.content, c2.content, c3.content
+        FROM contents c1
+        JOIN contents c2 ON c1.id = c2.id AND c2.content_id = c1.content_id + 1
+        JOIN contents c3 ON c2.id = c3.id AND c3.content_id = c2.content_id + 1
+        WHERE c1.id = ?;`;
+        const params = [1]; // Assuming you want to test for id = 1
+        const rows = await executeSQL(sql, params);
+        return rows;
+    }
+    async nestedSubqueryExample() {
+        const sql = `
+        SELECT u.name, 
+            (SELECT content FROM contents WHERE contents.id = u.id AND content_id = (
+                SELECT MAX(content_id) FROM contents WHERE id = u.id)
+            ) AS latest_content
+        FROM users u;`;
+        const rows = await executeSQL(sql);
+        return rows;
+    }
+    async functionConditionExample() {
+        const sql = `
+        SELECT *
+            FROM contents
+        WHERE REVERSE(content) LIKE ?;`;
+        const params = ['%0atad%']; // Customize as needed
+        const rows = await executeSQL(sql, params);
+        return rows;
+    }
+
 }
 
 module.exports = DAO;
