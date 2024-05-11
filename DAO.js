@@ -8,6 +8,7 @@ class DAO {
     }
 
     async showAllContentWithoutMemcached() {
+        this.cacheKey = 'all_content';
         const startTime = Date.now();
 
         const results = await Promise.all([
@@ -17,8 +18,8 @@ class DAO {
             this.functionConditionExample()
         ]);
 
-        const finishTime = Date.now();
         const data = results.flat();
+        const finishTime = Date.now();
 
         // Cache the data after fetching from the database
         return new Promise((resolve, reject) => {
@@ -63,6 +64,7 @@ class DAO {
                 if (err) {
                     reject(err);
                 } else {
+                    this.cacheKey = 'all_content'; 
                     resolve();
                 }
             });
