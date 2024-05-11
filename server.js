@@ -22,15 +22,35 @@ app.get('/', (req, res) => {
 });
 
 app.post('/startTest', async (req, res) => {
-    const sqlResults = await dao.showAllContentWithoutMemcached();
-    const memResults = await dao.showAllContentWithMemcached();
-    console.log(`SQL: ${sqlResults.data}\nMemcached: ${memResults.data}`);
+    let sqlTotalTime = 0;
+    let sqlTotalRows = 0;
 
+    let memTotalTime = 0;
+    let memTotalRows = 0;
+
+    const iterations = 1000;
+
+    // Make 100 seperate calls with multiple queries to the DB without memcached
+    for (let i = 0; i < iterations; i++) {
+        const sqlResults = await dao.showAllContentWithoutMemcached();
+        sqlTotalTime += sqlResults.timeTaken;
+        sqlTotalRows += sqlResults.data.length;
+    }
+
+    // Make 100 seperate calls with multiple queries to the DB with memcached
+    for (let i = 0; i < iterations; i++) {
+        const memResults = await dao.showAllContentWithMemcached();
+        memTotalTime += memResults.timeTaken;
+        memTotalRows += memResults.data.length;
+    }
+
+    await dao.clearCache();
     res.render('results', {
-        sqlTime: sqlResults.timeTaken,
-        memTime: memResults.timeTaken,
-        sqlData: sqlResults.data,
-        memData: memResults.data
+        sqlTime: sqlTotalTime,
+        sqlRows: sqlTotalRows,
+        memTime: memTotalTime,
+        memRows: memTotalRows,
+        runs: iterations * 5,
     });
 });
 

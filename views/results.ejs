@@ -9,13 +9,18 @@
     </head>
 
     <body>
-        <h1 class='center-text'> Results </h1>
+        <h1 class='center-text'> Results for <%= runs %> SQL queries</h1>
+
+        <h2 class='center-text'> Queries include aggregation, cross joins, function calls, and full joins on a small testing schema. </h2>
 
         <h2 class='center-text'> Pure SQL Results (No Memcached) </h2>
         <p class='center-text'> Time taken: <%= sqlTime %> ms </p>
+        <p class='center-text'> Rows Gathered: <%= sqlRows %> </p>
+
 
         <h2 class='center-text'> From Cache Results (With Memcached) </h2>
         <p class='center-text'> Time taken: <%= memTime %> ms </p>
+        <p class='center-text'> Rows Gathered: <%= memRows %> </p>
 
         <%-include('partials/nav') %>
         <div class='flexbox'>

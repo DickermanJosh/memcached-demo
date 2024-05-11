@@ -15,7 +15,8 @@ class DAO {
             this.multipleJoinsOrderExample(),
             this.recursiveJoinExample(),
             this.nestedSubqueryExample(),
-            this.functionConditionExample()
+            this.functionConditionExample(),
+            this.aggregationExample(),
         ]);
 
         const data = results.flat();
@@ -48,12 +49,12 @@ class DAO {
                 const timeTaken = endTime - startTime;
 
                 // Clear the cache after retrieving the data
-                this.clearCache().then(() => {
+                /* this.clearCache().then(() => {
+                }).catch(reject); */
                     resolve({
                         timeTaken: timeTaken,
                         data: data
                     });
-                }).catch(reject);
             });
         });
     }
@@ -96,6 +97,7 @@ class DAO {
         const rows = await executeSQL(sql, params);
         return rows;
     }
+
     async nestedSubqueryExample() {
         const sql = `
         SELECT u.name, 
@@ -106,13 +108,25 @@ class DAO {
         const rows = await executeSQL(sql);
         return rows;
     }
+
     async functionConditionExample() {
         const sql = `
         SELECT *
-            FROM contents
+        FROM contents
         WHERE REVERSE(content) LIKE ?;`;
         const params = ['%0atad%'];
         const rows = await executeSQL(sql, params);
+        return rows;
+    }
+
+    async aggregationExample() {
+        const sql = `
+        SELECT COUNT(id) AS count, content
+        FROM contents
+        WHERE content LIKE '%data%'
+        GROUP BY content
+        ORDER BY LENGTH(content) DESC;`;
+        const rows = await executeSQL(sql);
         return rows;
     }
 
