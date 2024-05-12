@@ -44,12 +44,17 @@ app.post('/startTest', async (req, res) => {
         memTotalRows += memResults.data.length;
     }
 
+    const uniqueSQLRows = sqlTotalRows / iterations;
+    const uniqueMemRows = memTotalRows / iterations;
+
     await dao.clearCache();
     res.render('results', {
         sqlTime: sqlTotalTime,
         sqlRows: sqlTotalRows,
+        sqlUnique: uniqueSQLRows,
         memTime: memTotalTime,
         memRows: memTotalRows,
+        memUnique: uniqueMemRows,
         runs: iterations * 5,
     });
 });

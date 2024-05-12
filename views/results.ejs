@@ -11,24 +11,39 @@
     <body>
         <h1 class='center-text'> Results for <%= runs %> SQL queries</h1>
 
-        <h2 class='center-text'> Queries include aggregation, cross joins, function calls, and full joins <br>on a small testing schema with 300 rows of data. </h2>
+        <h2 class='center-text'> 
+            Queries include aggregation, cross joins, function calls, and full joins 
+            <br>on a small testing schema with 300 rows of data.
+        </h2>
 
+        <br><br>
         <h2 class='center-text'> Pure SQL Results (No Memcached) </h2>
-        <p class='center-text'> Time taken: <%= sqlTime %> ms </p>
-        <p class='center-text'> Rows Gathered: <%= sqlRows %> </p>
+        <p class='center-text'> <strong>Time taken:</strong> <%= sqlTime %> ms (<%- sqlTime / 1000 %> seconds)</p>
+        <p class='center-text'> <strong>Rows Gathered:</strong> <%= sqlRows %> </p>
+        <p class='center-text'> <strong>Unique Rows:</strong> <%= sqlUnique %> </p>
 
 
         <h2 class='center-text'> From Cache Results (With Memcached) </h2>
-        <p class='center-text'> Time taken: <%= memTime %> ms </p>
-        <p class='center-text'> Rows Gathered: <%= memRows %> </p>
+        <p class='center-text'> <strong>Time taken:</strong> <%= memTime %> ms (<%- memTime / 1000 %> seconds)</p>
+        <p class='center-text'> <strong>Rows Gathered:</strong> <%= memRows %> </p>
+        <p class='center-text'> <strong>Unique Rows:</strong> <%= memUnique %> </p>
+
+        <% if (sqlTime > memTime) { %>
+            <p class='center-text'> 
+            In this case using Memcached to retrieve all these rows directly from system memory after the first call was
+            <%(sqlTime / memTime).toFixed(3) %>% faster than using new SQL calls for each query.
+            </p>
+        <% } %>
 
         <%-include('partials/nav') %>
         <div class='flexbox'>
             <form action='/startTest' method='POST'>
-                <input type='submit' value='Test again'>
+                <input class='test-btn' type='submit' value='Test again'>
             </form>
         </div>
 
+        <p class='center-text load-msg'> </p>
+        <script src="/msg.js"></script>
     </body>
 </html>
 

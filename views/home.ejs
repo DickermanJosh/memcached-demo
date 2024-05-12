@@ -12,13 +12,17 @@
         <br><br><br>
         <h1 class='center-text'> Memcached Demonstration </h1>
 
-        <h3 class='center-text'> Compare data return with and without Memcached </h3>
+        <h3 class='center-text'> Compare data return speeds with and without Memcached </h3>
+        <p class='center-text'> Calls are made to a local SQL database with two tables and ~300 rows of test data. </p>
+        <p class='center-text'> Results will likely take several seconds to load. </p>
 
         <div class='flexbox'>
             <form action='/startTest' method='POST'>
-                <input type='submit' value='Test'>
+                <input class='test-btn' type='submit' value='Test'>
             </form>
         </div>
+        <p class='center-text load-msg'> </p>
 
+        <script src="/msg.js"></script>
     </body>
 </html>
