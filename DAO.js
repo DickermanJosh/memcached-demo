@@ -80,7 +80,7 @@ class DAO {
         JOIN contents c ON u.id = c.id
         JOIN contents c2 ON c.id = c2.id
         WHERE c2.content LIKE ?
-            ORDER BY LENGTH(c.content) DESC;`;
+        ORDER BY LENGTH(c.content) DESC;`;
         const params = ['%data%'];
         const rows = await executeSQL(sql, params);
         return rows;

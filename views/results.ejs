@@ -13,7 +13,7 @@
 
         <h2 class='center-text'> 
             Queries include aggregation, cross joins, function calls, and full joins 
-            <br>on a small testing schema with 300 rows of data.
+            <br>on a small testing schema with ~300 rows of data.
         </h2>
 
         <br><br>
@@ -31,7 +31,7 @@
         <% if (sqlTime > memTime) { %>
             <p class='center-text'> 
             In this case using Memcached to retrieve all these rows directly from system memory after the first call was
-            <%(sqlTime / memTime).toFixed(3) %>% faster than using new SQL calls for each query.
+            <%- (sqlTime / memTime).toFixed(3) %> times faster than using new SQL calls for each query.
             </p>
         <% } %>
 
